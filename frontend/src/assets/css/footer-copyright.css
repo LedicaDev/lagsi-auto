@@ -1,0 +1,42 @@
+.footer-copyright {
+  width: 100vw;
+  height: 70px;
+  background: #000000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: ghostwhite;
+}
+
+.nexo-creative {
+  display: inline-flex;
+  align-items: center;
+}
+
+.logo-powered {
+  width: 1.5625rem;
+}
+
+.footer-link {
+  display: inline-flex;
+  align-items: center;
+  color: #99dce4;
+  text-decoration: none;
+}
+
+.footer-link:hover {
+  color: bisque;
+  transition: all.3s ease;
+}
+
+/* Small devices (landscape phones, less than 768px) */
+@media (max-width: 767.98px) {
+  .separator {
+    display: none;
+  }
+
+  .footer-copyright {
+    padding: 0 20px;
+  }
+}

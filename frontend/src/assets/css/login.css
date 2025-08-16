@@ -1,0 +1,101 @@
+/* Fondo con imagen */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: url("/background-login.jpg") no-repeat center center/cover;
+}
+
+/* Estilo glassmorphism */
+.login-form {
+  background: rgba(255, 255, 255, 0.1); /* Transparencia */
+  backdrop-filter: blur(10px); /* efecto cristal */
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 2rem 3rem;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 400px;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.login-form h2 {
+  margin-bottom: 1rem;
+  text-align: center;
+  color: #fff;
+}
+
+/* Inputs */
+.login-form input {
+  width: 100%;
+  padding: 0.8rem;
+  margin-bottom: 1rem;
+  border: none;
+  border-radius: 8px;
+  outline: none;
+  background: rgba(255, 255, 255, 0.3);
+  color: #fff;
+}
+
+.login-form input::placeholder {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Botón */
+.login-form button {
+  width: 100%;
+  padding: 0.8rem;
+  background: rgba(0, 123, 255, 0.8);
+  border: none;
+  color: white;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.login-form button:hover {
+  background: rgba(0, 86, 179, 0.9);
+}
+
+/* Error */
+.login-error {
+  color: #ff4d4d;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+/* Password con icono */
+.password-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.password-wrapper input {
+  width: 100%;
+  padding-right: 40px;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 18px;
+  transition: 0.2s;
+}
+
+.toggle-password.hide {
+  color: #90b3d9; /* Azul cuando está oculto */
+}
+
+.toggle-password.show {
+  color: #ff0000; /* Rojo cuando está visible */
+}
+
+.toggle-password:hover {
+  transform: translateY(-50%) scale(1.2);
+}

@@ -1,0 +1,10 @@
+.dashboard-layout {
+  display: flex;
+  height: 100vh;
+}
+
+.dashboard-main {
+  flex: 1;
+  padding: 20px 40px;
+  overflow-y: auto;
+}

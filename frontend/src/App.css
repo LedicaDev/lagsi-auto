@@ -1,0 +1,99 @@
+@import url("https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;500;600;700&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Rajdhani:wght@300;400;500;600;700&family=Titillium+Web:ital,wght@0,200;0,300;0,400;0,600;0,700;1,200;1,300;1,400;1,600;1,700&family=Yellowtail&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: weight;
+  font-style: normal;
+  overflow-x: hidden;
+}
+
+/* App.css */
+
+.navbar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #000000;
+  color: #fff;
+  padding: 0 100px;
+}
+
+.image-logo {
+  display: flex;
+  align-items: center;
+  width: 60px;
+}
+
+.navbar-items a {
+  color: #fff;
+  text-decoration: none;
+  margin-left: 20px;
+}
+
+.mobile-navbar {
+  width: 100%;
+  height: 100%;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.hamburger-icon {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 24px;
+}
+
+.mobile-menu {
+  display: flex;
+  flex-direction: column;
+  background-color: #222;
+  position: absolute;
+  top: 0;
+  left: -62%;
+  width: 60%;
+  transition: left 0.3s ease;
+}
+
+.mobile-nav-item {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  row-gap: 50px;
+}
+
+.mobile-content {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 30px;
+}
+
+.mobile-menu.open {
+  left: 0;
+}
+
+.mobile-menu a {
+  padding: 10px 20px;
+  color: #fff;
+  text-decoration: none;
+}
+
+.hidden {
+  display: none;
+}

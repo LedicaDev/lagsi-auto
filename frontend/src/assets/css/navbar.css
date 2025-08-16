@@ -1,0 +1,42 @@
+.navbar-content {
+    position: fixed;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100vw;
+    height: 80px;
+    background-color: #000000;
+    z-index: 1;
+    
+  }
+
+.navbar{
+    display: flex;
+}
+
+.navbar-brand {
+    text-decoration: none;
+    list-style: none;
+}
+
+.navbar-nav {
+    display: flex;
+    list-style: none;
+}
+
+.navbar-items {
+    display: flex;
+}
+
+.nav-item {
+    font-size: 1rem;
+}
+
+.nav-item:hover {
+    color: #1682b0;
+    transition: all .3s ease;
+  }
+
+.nav-link {
+    text-decoration: none;
+}

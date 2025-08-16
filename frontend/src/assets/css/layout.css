@@ -1,0 +1,12 @@
+main {
+  display: grid;
+  margin: auto;
+  width: 100vw;
+  /* max-width: 1024px; */
+  grid-template-columns: 1fr;
+  
+}
+.main-content {
+  width: 100%;
+  
+}

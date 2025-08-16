@@ -1,0 +1,33 @@
+.inicio {
+  width: 100vw;
+}
+
+.home-background {
+  width: 100%;
+  height: 500px;
+  background-image: url("/lagsi-background.jpg"); /* este archivo debe estar en public/ */
+  background-size: cover;
+  background-position: center;
+}
+
+.home-description {
+  background: #074983;
+  padding: 50px 20px;
+  color: ghostwhite; /* color general para todo el descripcion */
+}
+
+.home-description h2,
+.home-description i {
+  color: ghostwhite;
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+  .home-background {
+    height: 800px;
+  }
+
+  /*   .inicio {
+    padding-top: 80px;
+  } */
+}

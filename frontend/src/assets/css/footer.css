@@ -1,0 +1,148 @@
+.footer-content {
+  /* width: 100vw; */
+  /* height: 300px; */
+  background: #333;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  justify-content: center;
+  /* align-items: center; */
+  gap: 10px;
+  padding-bottom: 30px;
+}
+
+.footer-column {
+  padding: 20px 50px;
+  width: 100%;
+  color: ghostwhite;
+}
+.date-politics {
+  display: flex;
+  gap: 5px;
+}
+
+.fa-flag {
+  color: orange;
+}
+
+.footer-col-title {
+  color: ghostwhite;
+  font-size: 1.5rem;
+}
+
+.footer-site-map {
+  margin: 15px 0;
+  list-style: none;
+}
+
+.footer-links-item {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: ghostwhite;
+}
+
+.mobile {
+  color: #e3e4e5;
+}
+
+.whatsapp {
+  color: #25d366;
+}
+
+.email {
+  color: #ea4335;
+}
+
+.fa-handshake {
+  color: #80ccff;
+}
+
+.icon-contact {
+  font-size: 1.5rem;
+}
+
+.footer-links-item:hover {
+  color: aqua;
+  transition: all 0.3s ease;
+}
+
+.link-attributs {
+  color: ghostwhite;
+  text-decoration: none;
+}
+
+.link-attributs:hover {
+  color: aqua;
+  transition: all 0.3s ease;
+}
+
+.footer-attributs {
+  font-size: 1.2rem;
+}
+
+.footer-attributs-list {
+  margin-top: 10px;
+  list-style: none;
+}
+
+.footer-servicios {
+  margin: 15px 0;
+  list-style: none;
+}
+
+/* Redes Sociales */
+
+.btn-redes-sociales {
+  display: flex;
+  gap: 15px;
+  padding: 20px;
+  list-style: none;
+}
+
+.btn-redes-sociales-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  background: #000;
+  text-decoration: none;
+  color: ghostwhite;
+  font-size: 1.3rem;
+}
+
+.facebook:hover {
+  background: #3b5998;
+  transition: all 0.3s ease-in-out;
+}
+
+.instagram:hover {
+  background: linear-gradient(
+    45deg,
+    #405de6,
+    #5851db,
+    #833ab4,
+    #c13584,
+    #e1306c,
+    #fd1d1d
+  );
+  transition: all 0.3s ease-in-out;
+}
+
+.linkedin:hover {
+  background: #0e76a8;
+}
+
+.youtube:hover {
+  background: #bb0000;
+  transition: all 0.3s ease-in-out;
+}
+
+.icon-redes {
+  font-size: 1.3rem;
+}
+
+.icon-redes:hover {
+  font-size: 1.5rem;
+  transition: all 0.3s ease-in-out;
+}
