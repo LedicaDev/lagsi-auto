@@ -22,8 +22,13 @@
 }
 
 .sidebar-header {
-  text-align: center;
+  /* display: flex;
+  align-items: center; */
   margin-bottom: 2rem;
+}
+
+.bxs-grid-alt {
+  font-size: 2rem;
 }
 
 .sidebar-header h2 {

@@ -4,12 +4,15 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const path = require("path");
 const jwt = require("jsonwebtoken");
+const inicioRoutes = require("./routes/inicio");
 
 const app = express();
 
 // Middleware globales
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use("/api/inicio", inicioRoutes);
 
 // Configurar CORS para permitir cookies
 app.use(

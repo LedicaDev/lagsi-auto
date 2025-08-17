@@ -18,16 +18,21 @@
 
 .sidebar-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
 }
 
 .toggle-btn {
-  background: none;
+  background: rgb(96, 96, 223);
   color: white;
   border: none;
   font-size: 1.3rem;
   cursor: pointer;
+}
+
+.toggle-btn:hover {
+  background: rgb(33, 33, 220);
+  transition: all 0.3s ease;
 }
 
 .sidebar-nav {

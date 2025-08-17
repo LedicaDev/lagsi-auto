@@ -1,21 +1,16 @@
+// frontend/src/pages/DashboardLayout.jsx
+import React from "react";
 import Sidebar from "../components/Sidebar";
 import "../assets/css/dashboardLayout.css";
-import CopyRight from "../components/CopyRight";
 
-const DashboardLayout = ({ children, onLogout, onMenuClick, usuario }) => {
+export default function DashboardLayout({ children, onLogout, onMenuClick }) {
   return (
     <div className="dashboard-layout">
-      {/* Menú lateral */}
-      <Sidebar
-        onLogout={onLogout}
-        onMenuClick={onMenuClick}
-        usuario={usuario} // ✅ Pasamos usuario a Sidebar
-      />
+      {/* Sidebar siempre presente */}
+      <Sidebar onLogout={onLogout} onMenuClick={onMenuClick} />
 
-      {/* descripción principal */}
-      <div className="dashboard-main">{children}</div>
+      {/* Contenido dinámico */}
+      <main className="dashboard-main">{children}</main>
     </div>
   );
-};
-
-export default DashboardLayout;
+}

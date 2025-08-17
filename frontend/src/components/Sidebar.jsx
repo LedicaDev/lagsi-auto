@@ -1,14 +1,19 @@
 import { useState } from "react";
+import "boxicons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faAt,
   faBars,
+  faBriefcase,
   faHome,
   faImages,
+  faPeopleGroup,
   faSignOutAlt,
-  faTableCellsLarge,
+  faUserPlus,
   faUsers,
   faVideo, // 👈 Importado correctamente
 } from "@fortawesome/free-solid-svg-icons";
+
 import "../assets/css/sidebar.css";
 
 const Sidebar = ({ onLogout, onMenuClick }) => {
@@ -19,9 +24,11 @@ const Sidebar = ({ onLogout, onMenuClick }) => {
       <aside className={`sidebar`}>
         <div className="sidebar-header">
           {collapsed ? (
-            <FontAwesomeIcon icon={faTableCellsLarge} size="2x" />
+            <i class="bx bxs-grid-alt"></i>
           ) : (
-            <h2>cPanel</h2>
+            <h2>
+              <i class="bx bxs-grid-alt"></i>&nbsp; cPanel
+            </h2>
           )}
         </div>
 
@@ -44,6 +51,22 @@ const Sidebar = ({ onLogout, onMenuClick }) => {
           <li onClick={() => onMenuClick("admin-nosotros")}>
             <FontAwesomeIcon icon={faUsers} />
             {!collapsed && <span>Admin Nosotros</span>}
+          </li>
+          <li onClick={() => onMenuClick("admin-equipo")}>
+            <FontAwesomeIcon icon={faPeopleGroup} />
+            {!collapsed && <span>Admin Equipo</span>}
+          </li>
+          <li onClick={() => onMenuClick("admin-servicios")}>
+            <FontAwesomeIcon icon={faBriefcase} />
+            {!collapsed && <span>Admin Servicios</span>}
+          </li>
+          <li onClick={() => onMenuClick("admin-contacto")}>
+            <FontAwesomeIcon icon={faAt} />
+            {!collapsed && <span>Admin Contacto</span>}
+          </li>
+          <li onClick={() => onMenuClick("admin-usuarios")}>
+            <FontAwesomeIcon icon={faUserPlus} />
+            {!collapsed && <span>Admin Usuarios</span>}
           </li>
           <li onClick={onLogout}>
             <FontAwesomeIcon icon={faSignOutAlt} />

@@ -1,4 +1,10 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
 import { useEffect, useState } from "react";
 import Login from "./pages/Login";
 import PanelAdmin from "./pages/PanelAdmin";
@@ -39,32 +45,44 @@ function PrivateRoute({ children }) {
   return isAuthenticated ? children : <Navigate to="/login" />;
 }
 
+function Layout({ children }) {
+  const location = useLocation();
+  // 👇 Ocultar Navbar en /panel
+  const hideNavbar = location.pathname.startsWith("/panel");
+
+  return (
+    <>
+      {!hideNavbar && <Navbar />}
+      {children}
+    </>
+  );
+}
+
 export default function App() {
   return (
     <BrowserRouter>
-      {/* Navbar siempre visible */}
-      <Navbar />
+      <Layout>
+        <Routes>
+          {/* 👇 Si entras a "/", te manda a "/inicio" */}
+          <Route path="/" element={<Navigate to="/inicio" />} />
 
-      <Routes>
-        {/* 👇 Si entras a "/", te manda a "/inicio" */}
-        <Route path="/" element={<Navigate to="/inicio" />} />
+          {/* Página pública Inicio */}
+          <Route path="/inicio" element={<Inicio />} />
 
-        {/* Página pública Inicio */}
-        <Route path="/inicio" element={<Inicio />} />
+          {/* Página de Login */}
+          <Route path="/login" element={<Login />} />
 
-        {/* Página de Login */}
-        <Route path="/login" element={<Login />} />
-
-        {/* Página protegida */}
-        <Route
-          path="/panel"
-          element={
-            <PrivateRoute>
-              <PanelAdmin />
-            </PrivateRoute>
-          }
-        />
-      </Routes>
+          {/* Página protegida */}
+          <Route
+            path="/panel"
+            element={
+              <PrivateRoute>
+                <PanelAdmin />
+              </PrivateRoute>
+            }
+          />
+        </Routes>
+      </Layout>
     </BrowserRouter>
   );
 }
