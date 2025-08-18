@@ -1,4 +1,4 @@
-const bcrypt = require("bcrypt");
+/* const bcrypt = require("bcrypt");
 const passwordPlano = "admin123"; // Asegúrate que sea la misma que usarás
 const saltRounds = 10;
 
@@ -10,3 +10,4 @@ bcrypt.hash(passwordPlano, saltRounds, (err, hash) => {
 
   console.log("Nuevo hash:", hash);
 });
+ */

@@ -10,8 +10,8 @@ import {
   faPeopleGroup,
   faSignOutAlt,
   faUserPlus,
-  faUsers,
-  faVideo, // 👈 Importado correctamente
+  faVideo,
+  faWebAwesome, // 👈 Importado correctamente
 } from "@fortawesome/free-solid-svg-icons";
 
 import "../assets/css/sidebar.css";
@@ -49,7 +49,7 @@ const Sidebar = ({ onLogout, onMenuClick }) => {
           </li>
 
           <li onClick={() => onMenuClick("admin-nosotros")}>
-            <FontAwesomeIcon icon={faUsers} />
+            <FontAwesomeIcon icon={faWebAwesome} />
             {!collapsed && <span>Admin Nosotros</span>}
           </li>
           <li onClick={() => onMenuClick("admin-equipo")}>

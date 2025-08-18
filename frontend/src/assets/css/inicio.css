@@ -5,7 +5,7 @@
 .home-background {
   width: 100%;
   height: 500px;
-  background-image: url("/lagsi-background.jpg"); /* este archivo debe estar en public/ */
+  /* background-image: url("/lagsi-background.jpg"); */ /* este archivo debe estar en public/ */
   background-size: cover;
   background-position: center;
 }
@@ -14,6 +14,10 @@
   background: #074983;
   padding: 50px 20px;
   color: ghostwhite; /* color general para todo el descripcion */
+}
+
+.home-description p {
+  color: ghostwhite;
 }
 
 .home-description h2,
@@ -27,7 +31,7 @@
     height: 800px;
   }
 
-  /*   .inicio {
+  .inicio {
     padding-top: 80px;
-  } */
+  }
 }

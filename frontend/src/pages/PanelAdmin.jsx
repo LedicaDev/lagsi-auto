@@ -1,4 +1,3 @@
-// frontend/src/pages/PanelAdmin.jsx
 import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -7,14 +6,8 @@ import axios from "axios";
 import DashboardLayout from "./DashboardLayout";
 import "../assets/css/panelAdmin.css";
 
-function AdminInicio() {
-  return (
-    <div>
-      <h3>Gestión de Inicio</h3>
-      <p>Contenido para editar el texto/hero del inicio.</p>
-    </div>
-  );
-}
+// Componentes individuales
+import AdminInicio from "../components/AdminInicio";
 
 function AdminSlideshow() {
   return (
@@ -105,28 +98,20 @@ export default function PanelAdmin() {
     switch (active) {
       case "admin-inicio":
         return <AdminInicio />;
-
       case "admin-slideshow":
         return <AdminSlideshow />;
-
       case "admin-testimonios":
         return <AdminTestimonios />;
-
       case "admin-nosotros":
         return <AdminNosotros />;
-
       case "admin-equipo":
         return <AdminEquipo />;
-
       case "admin-servicios":
         return <AdminServicios />;
-
       case "admin-contacto":
         return <AdminContacto />;
-
       case "admin-usuarios":
         return <AdminUsuarios />;
-
       default:
         return <AdminInicio />;
     }
@@ -134,7 +119,6 @@ export default function PanelAdmin() {
 
   return (
     <DashboardLayout onLogout={onLogout} onMenuClick={onMenuClick}>
-      {/* Header dinámico */}
       <div className="content-header">
         <h2>
           {active === "admin-inicio" && "Admin Inicio"}
@@ -147,8 +131,6 @@ export default function PanelAdmin() {
           {active === "admin-usuarios" && "Admin Usuarios"}
         </h2>
       </div>
-
-      {/* Contenido dinámico */}
       <div className="content-body">{renderContent()}</div>
     </DashboardLayout>
   );
