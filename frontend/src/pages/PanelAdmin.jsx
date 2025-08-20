@@ -1,5 +1,5 @@
-import { useState, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useCallback, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 
 // Layout reutilizable
@@ -8,75 +8,36 @@ import "../assets/css/panelAdmin.css";
 
 // Componentes individuales
 import AdminInicio from "../components/AdminInicio";
-
-function AdminSlideshow() {
-  return (
-    <div>
-      <h3>Gestión de Slideshow</h3>
-      <p>Sube, ordena y elimina imágenes del carrusel.</p>
-    </div>
-  );
-}
-
-function AdminTestimonios() {
-  return (
-    <div>
-      <h3>Gestión de Testimonios</h3>
-      <p>Agrega o edita videos testimoniales (YouTube, etc.).</p>
-    </div>
-  );
-}
-
-function AdminNosotros() {
-  return (
-    <div>
-      <h3>Gestión de Nosotros</h3>
-      <p>Actualiza información del equipo y misión/visión.</p>
-    </div>
-  );
-}
-
-function AdminEquipo() {
-  return (
-    <div>
-      <h3>Gestión de Equipo</h3>
-      <p>Agrega o edita información sobre los miembros del equipo.</p>
-    </div>
-  );
-}
-
-function AdminServicios() {
-  return (
-    <div>
-      <h3>Gestión de Servicios</h3>
-      <p>Actualiza la lista de servicios ofrecidos.</p>
-    </div>
-  );
-}
-
-function AdminContacto() {
-  return (
-    <div>
-      <h3>Gestión de Contacto</h3>
-      <p>Actualiza la información de contacto y redes sociales.</p>
-    </div>
-  );
-}
-
-function AdminUsuarios() {
-  return (
-    <div>
-      <h3>Gestión de Usuarios</h3>
-      <p>Administra los usuarios registrados en la plataforma.</p>
-    </div>
-  );
-}
+import AdminSlideshow from "../components/AdminSlideshow";
+import AdminTestimonios from "../components/AdminTestimonios";
+import AdminNosotros from "../components/AdminNosotros";
+// import AdminEquipo from "../components/AdminEquipo";
+// import AdminServicios from "../components/AdminServicios";
+// import AdminContacto from "../components/AdminContacto";
+// import AdminUsuarios from "../components/AdminUsuarios";
 
 export default function PanelAdmin() {
-  const [active, setActive] = useState("admin-inicio");
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const onMenuClick = useCallback((key) => setActive(key), []);
+  // ✅ Lee ?tab= del query string
+  const params = new URLSearchParams(location.search);
+  const initialTab = params.get("tab") || "admin-inicio";
+
+  const [active, setActive] = useState(initialTab);
+
+  useEffect(() => {
+    setActive(initialTab);
+  }, [initialTab]);
+
+  const onMenuClick = useCallback(
+    (key) => {
+      setActive(key);
+      // 👇 actualiza la URL para recordar la pestaña activa
+      navigate(`/panel?tab=${key}`, { replace: true });
+    },
+    [navigate]
+  );
 
   const onLogout = useCallback(async () => {
     try {
@@ -104,14 +65,14 @@ export default function PanelAdmin() {
         return <AdminTestimonios />;
       case "admin-nosotros":
         return <AdminNosotros />;
-      case "admin-equipo":
-        return <AdminEquipo />;
-      case "admin-servicios":
-        return <AdminServicios />;
-      case "admin-contacto":
-        return <AdminContacto />;
-      case "admin-usuarios":
-        return <AdminUsuarios />;
+      // case "admin-equipo":
+      //   return <AdminEquipo />;
+      // case "admin-servicios":
+      //   return <AdminServicios />;
+      // case "admin-contacto":
+      //   return <AdminContacto />;
+      // case "admin-usuarios":
+      //   return <AdminUsuarios />;
       default:
         return <AdminInicio />;
     }

@@ -1,3 +1,4 @@
+// frontend/src/components/Slideshow.jsx
 import { useEffect, useState } from "react";
 import "../assets/css/slideshow.css";
 import axios from "axios";
@@ -9,7 +10,7 @@ const Slideshow = () => {
     axios
       .get("http://localhost:5000/api/slideshow")
       .then((res) => {
-        setImagenes(res.data);
+        setImagenes(res.data || []);
       })
       .catch((err) => console.error("Error cargando imágenes:", err));
   }, []);
@@ -24,10 +25,13 @@ const Slideshow = () => {
     const btnLeft = document.querySelector("#slider__btn--left");
     const btnRight = document.querySelector("#slider__btn--right");
 
-    slider.insertAdjacentElement("afterbegin", sliderSectionLast);
+    if (sliderSectionLast) {
+      slider.insertAdjacentElement("afterbegin", sliderSectionLast);
+    }
 
     function next() {
       let sliderSectionFirst = document.querySelectorAll(".slider-section")[0];
+      if (!sliderSectionFirst) return;
       slider.style.transition = "all 0.5s";
       slider.style.marginLeft = "-200%";
       setTimeout(function () {
@@ -40,6 +44,7 @@ const Slideshow = () => {
     function prev() {
       let sliderSections = document.querySelectorAll(".slider-section");
       let sliderSectionLast = sliderSections[sliderSections.length - 1];
+      if (!sliderSectionLast) return;
       slider.style.transition = "all 0.5s";
       slider.style.marginLeft = "0";
       setTimeout(function () {
@@ -49,14 +54,14 @@ const Slideshow = () => {
       }, 500);
     }
 
-    btnRight.addEventListener("click", next);
-    btnLeft.addEventListener("click", prev);
+    btnRight?.addEventListener("click", next);
+    btnLeft?.addEventListener("click", prev);
 
     const intervalId = setInterval(next, 5000);
 
     return () => {
-      btnRight.removeEventListener("click", next);
-      btnLeft.removeEventListener("click", prev);
+      btnRight?.removeEventListener("click", next);
+      btnLeft?.removeEventListener("click", prev);
       clearInterval(intervalId);
     };
   }, [imagenes]);
@@ -64,7 +69,7 @@ const Slideshow = () => {
   return (
     <>
       <div className="slide-title">
-        <h2>Testimonios</h2>
+        <h2>Slideshow</h2>
       </div>
       <div className="slide-container">
         <div
@@ -73,9 +78,9 @@ const Slideshow = () => {
           style={{ width: `${imagenes.length * 100}%` }}
         >
           {imagenes.map((img, index) => (
-            <div className="slider-section" key={index}>
+            <div className="slider-section" key={img.id || index}>
               <img
-                src={`http://localhost:5000${img.url}`}
+                src={`http://localhost:5000${img.imagen_url}`}
                 alt={`Slide ${index}`}
                 className="slider__img"
               />

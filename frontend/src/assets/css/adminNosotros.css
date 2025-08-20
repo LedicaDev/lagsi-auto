@@ -1,0 +1,59 @@
+/* Tabla general */
+.admin-nosotros-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+}
+
+.admin-nosotros-table th,
+.admin-nosotros-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* Descripción truncada */
+.admin-nosotros-desc {
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+}
+
+/* Imagen */
+.admin-nosotros-img {
+  width: 100px;
+  border-radius: 6px;
+  display: block;
+  margin: 0 auto;
+}
+
+/* Botones */
+.btn-edit,
+.btn-delete {
+  padding: 4px 10px;
+  font-size: 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: white;
+}
+
+.btn-edit {
+  background-color: orange;
+  margin-right: 5px;
+}
+
+.btn-delete {
+  background-color: red;
+}
+
+.btn-edit:hover {
+  background-color: darkorange;
+}
+
+.btn-delete:hover {
+  background-color: darkred;
+}

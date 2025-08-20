@@ -10,13 +10,18 @@ const jwt = require("jsonwebtoken");
 // Rutas
 const authRoutes = require("./routes/auth");
 const inicioRoutes = require("./routes/inicio");
+const slideshowRoutes = require("./routes/slideshow");
+const testimoniosRoutes = require("./routes/testimonios");
+const nosotrosRoutes = require("./routes/nosotros");
 
 const app = express();
 
 // --- Asegurar carpetas necesarias (para subidas de imágenes) ---
 const uploadsRoot = path.join(__dirname, "uploads");
 const uploadsInicio = path.join(uploadsRoot, "inicio");
+const uploadsNosotros = path.join(uploadsRoot, "nosotros"); // 👈 NEW
 fs.mkdirSync(uploadsInicio, { recursive: true });
+fs.mkdirSync(uploadsNosotros, { recursive: true }); // 👈 NEW
 
 // --- Middlewares globales ---
 app.use(
@@ -35,8 +40,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static(uploadsRoot));
 
 // --- Rutas de API ---
-app.use("/api", authRoutes); // /api/login, /api/logout, /api/me...
-app.use("/api/inicio", inicioRoutes); // GET/PUT /api/inicio
+app.use("/api", authRoutes);
+app.use("/api/inicio", inicioRoutes);
+app.use("/api/slideshow", slideshowRoutes);
+app.use("/api/testimonios", testimoniosRoutes);
+app.use("/api/nosotros", nosotrosRoutes); // ✅
 
 // ✅ Ruta para validar autenticación usando la cookie
 app.get("/api/checkAuth", (req, res) => {

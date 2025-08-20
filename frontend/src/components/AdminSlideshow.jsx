@@ -1,10 +1,12 @@
 // frontend/src/components/AdminSlideshow.jsx
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 
 const AdminSlideshow = () => {
   const [images, setImages] = useState([]);
   const [file, setFile] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [mensaje, setMensaje] = useState("");
 
   useEffect(() => {
     fetchImages();
@@ -15,33 +17,41 @@ const AdminSlideshow = () => {
       const res = await axios.get("http://localhost:5000/api/slideshow");
       setImages(res.data);
     } catch (error) {
-      console.error("Error al cargar imágenes", error);
+      console.error("Error al cargar imágenes:", error);
+      setMensaje("No se pudo cargar el slideshow.");
     }
   };
 
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
+    const selected = e.target.files[0];
+    setFile(selected);
+    if (selected) {
+      setPreview(URL.createObjectURL(selected));
+    }
   };
 
-  const handleUpload = async () => {
-    if (!file) return alert("Selecciona una imagen");
+  const handleUpload = async (e) => {
+    e.preventDefault();
+    if (!file) {
+      setMensaje("⚠️ Selecciona una imagen primero.");
+      return;
+    }
 
     const formData = new FormData();
     formData.append("image", file);
 
     try {
-      // ✅ Le agregamos el parámetro section=slideshow
-      await axios.post(
-        "http://localhost:5000/api/slideshow?section=slideshow",
-        formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
-      );
+      await axios.post("http://localhost:5000/api/slideshow", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
-      alert("Imagen subida con éxito");
+      setMensaje("✅ Imagen subida con éxito.");
       setFile(null);
+      setPreview(null);
       fetchImages();
     } catch (error) {
-      console.error("Error al subir la imagen", error);
+      console.error("Error al subir la imagen:", error);
+      setMensaje("❌ Error al subir la imagen.");
     }
   };
 
@@ -50,20 +60,47 @@ const AdminSlideshow = () => {
 
     try {
       await axios.delete(`http://localhost:5000/api/slideshow/${id}`);
-      alert("Imagen eliminada");
+      setMensaje("🗑️ Imagen eliminada.");
       fetchImages();
     } catch (error) {
-      console.error("Error al eliminar imagen", error);
+      console.error("Error al eliminar imagen:", error);
+      setMensaje("❌ Error al eliminar la imagen.");
     }
   };
 
   return (
-    <div>
+    <div style={{ padding: "2rem" }}>
       <h2>Administrar Slideshow</h2>
 
-      <input type="file" onChange={handleFileChange} />
-      <button onClick={handleUpload}>Subir Imagen</button>
+      <form onSubmit={handleUpload} encType="multipart/form-data">
+        <div>
+          <label>
+            <strong>Subir nueva imagen:</strong>
+          </label>
+          <br />
+          <input type="file" accept="image/*" onChange={handleFileChange} />
+        </div>
 
+        {preview && (
+          <div style={{ marginTop: "1rem" }}>
+            <p>Vista previa:</p>
+            <img
+              src={preview}
+              alt="preview"
+              style={{ width: "300px", border: "1px solid #ccc" }}
+            />
+          </div>
+        )}
+
+        <br />
+        <button type="submit">Guardar Imagen</button>
+      </form>
+
+      {mensaje && <p>{mensaje}</p>}
+
+      <hr />
+
+      <h3>Imágenes actuales:</h3>
       <div style={{ display: "flex", flexWrap: "wrap", marginTop: "20px" }}>
         {images.map((img) => (
           <div
@@ -81,7 +118,12 @@ const AdminSlideshow = () => {
               style={{ width: "200px", height: "auto" }}
             />
             <br />
-            <button onClick={() => handleDelete(img.id)}>Eliminar</button>
+            <button
+              style={{ marginTop: "0.5rem" }}
+              onClick={() => handleDelete(img.id)}
+            >
+              Eliminar
+            </button>
           </div>
         ))}
       </div>

@@ -1,143 +1,257 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { useQuill } from "react-quilljs";
+import "quill/dist/quill.snow.css";
+import "../assets/css/adminNosotros.css";
 
-export default function AdminNosotros() {
-  const [secciones, setSecciones] = useState([]);
-  const [form, setForm] = useState({
-    titulo: "",
-    descripcion: "",
-    imagen: null,
-  });
+const AdminNosotros = () => {
+  const [items, setItems] = useState([]);
   const [editId, setEditId] = useState(null);
+  const [titulo, setTitulo] = useState("");
+  const [contenido, setContenido] = useState("");
+  const [imagen, setImagen] = useState(null);
   const [preview, setPreview] = useState(null);
+  const [mensaje, setMensaje] = useState("");
+  const [formVisible, setFormVisible] = useState(false);
 
-  // 📌 Cargar datos al iniciar
+  // ✅ Editor Quill
+  const { quill, quillRef } = useQuill({
+    theme: "snow",
+    modules: {
+      toolbar: [
+        ["bold", "italic", "underline", "strike"],
+        [{ header: [1, 2, 3, false] }],
+        [{ list: "ordered" }, { list: "bullet" }],
+        ["link", "image"],
+        ["clean"],
+      ],
+    },
+  });
+
+  // 🔧 Listener para escritura manual
   useEffect(() => {
-    fetch("/api/nosotros")
-      .then((res) => res.json())
-      .then((data) => setSecciones(data))
-      .catch((err) => console.error("Error al cargar Nosotros:", err));
+    if (!quill) return;
+    const handler = () => {
+      setContenido(quill.root.innerHTML);
+    };
+    quill.on("text-change", handler);
+    return () => {
+      quill.off("text-change", handler);
+    };
+  }, [quill]);
+
+  // 🔧 Inyectar contenido en Quill cuando editamos
+  useEffect(() => {
+    if (quill && formVisible) {
+      quill.root.innerHTML = contenido || "";
+    }
+  }, [quill, contenido, formVisible]);
+
+  // 📌 Cargar datos desde DB
+  const fetchData = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/nosotros");
+      const data = await res.json();
+      setItems(Array.isArray(data) ? data : [data]);
+    } catch (err) {
+      console.error("Error cargando Nosotros:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
   }, []);
 
-  // 📌 Manejar cambios en campos
-  const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    if (name === "imagen") {
-      setForm({ ...form, imagen: files[0] });
-      setPreview(URL.createObjectURL(files[0]));
-    } else {
-      setForm({ ...form, [name]: value });
+  // 📌 Subida de archivo
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setImagen(file);
+    if (file) {
+      setPreview(URL.createObjectURL(file));
     }
   };
 
-  // 📌 Enviar formulario
+  // 📌 Guardar (crear/editar)
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append("titulo", form.titulo);
-    formData.append("descripcion", form.descripcion);
-    if (form.imagen) {
-      formData.append("imagen", form.imagen);
-    }
+    try {
+      const formData = new FormData();
+      formData.append("titulo", titulo);
+      formData.append("descripcion", contenido);
+      if (imagen) {
+        formData.append("imagen", imagen);
+      }
 
-    const method = editId ? "PUT" : "POST";
-    const url = editId
-      ? `/api/nosotros/${editId}?section=nosotros`
-      : `/api/nosotros?section=nosotros`;
+      const method = editId ? "PUT" : "POST";
+      const url = editId
+        ? `http://localhost:5000/api/nosotros/${editId}`
+        : "http://localhost:5000/api/nosotros";
 
-    const res = await fetch(url, { method, body: formData });
-    const data = await res.json();
+      const res = await fetch(url, {
+        method,
+        body: formData,
+      });
 
-    if (res.ok) {
-      alert(data.message || "Registro guardado");
-      // Recargar lista
-      const updated = await fetch("/api/nosotros").then((res) => res.json());
-      setSecciones(updated);
-      setForm({ titulo: "", descripcion: "", imagen: null });
-      setPreview(null);
-      setEditId(null);
-    } else {
-      alert(data.error || "Error al guardar");
+      const result = await res.json();
+      if (res.ok) {
+        setMensaje(result.message || "Operación exitosa");
+        // ✅ Reload completo y volver a AdminNosotros
+        window.location.href = "/panel?tab=admin-nosotros";
+      } else {
+        setMensaje(result.error || "Error al guardar");
+      }
+    } catch (error) {
+      console.error("Error al enviar los datos:", error);
+      setMensaje("Error de conexión con el servidor.");
     }
   };
 
-  // 📌 Editar registro
+  // 📌 Editar
   const handleEdit = (item) => {
-    setForm({
-      titulo: item.titulo,
-      descripcion: item.descripcion,
-      imagen: null, // No cargamos archivo aquí
-    });
-    setPreview(item.imagen ? item.imagen : null);
     setEditId(item.id);
+    setTitulo(item.titulo || "");
+    setContenido(item.descripcion || "");
+    setImagen(null);
+    setPreview(item.url ? `http://localhost:5000${item.url}` : null);
+    setFormVisible(true);
   };
 
-  // 📌 Eliminar registro
+  // 📌 Eliminar
   const handleDelete = async (id) => {
-    if (!window.confirm("¿Seguro que deseas eliminar esta sección?")) return;
-    const res = await fetch(`/api/nosotros/${id}`, { method: "DELETE" });
-    const data = await res.json();
-    if (res.ok) {
-      alert(data.message);
-      setSecciones(secciones.filter((s) => s.id !== id));
-    } else {
-      alert(data.error || "Error al eliminar");
+    if (!window.confirm("¿Seguro de eliminar este registro?")) return;
+    try {
+      const res = await fetch(`http://localhost:5000/api/nosotros/${id}`, {
+        method: "DELETE",
+      });
+      const result = await res.json();
+      if (res.ok) {
+        setMensaje(result.message || "Eliminado exitosamente");
+        fetchData();
+      } else {
+        setMensaje(result.error || "Error al eliminar");
+      }
+    } catch (err) {
+      console.error("Error al eliminar:", err);
     }
+  };
+
+  // 📌 Cancelar
+  const handleCancel = () => {
+    window.location.href = "/panel?tab=admin-nosotros";
   };
 
   return (
-    <div className="admin-nosotros">
-      <h2>Administrar Nosotros</h2>
+    <div style={{ padding: "2rem" }}>
+      <h2>Gestión de Nosotros</h2>
 
-      {/* Formulario */}
-      <form onSubmit={handleSubmit} className="form-nosotros">
-        <input
-          type="text"
-          name="titulo"
-          placeholder="Título"
-          value={form.titulo}
-          onChange={handleChange}
-          required
-        />
-        <textarea
-          name="descripcion"
-          placeholder="Descripción"
-          value={form.descripcion}
-          onChange={handleChange}
-          required
-        ></textarea>
+      {/* 📌 Listado */}
+      <table className="admin-nosotros-table">
+        <thead>
+          <tr>
+            <th style={{ width: "50px" }}>ID</th>
+            <th style={{ width: "150px" }}>Título</th>
+            <th style={{ width: "300px" }}>Descripción</th>
+            <th style={{ width: "150px" }}>Imagen</th>
+            <th style={{ width: "150px" }}>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {items.length > 0 ? (
+            items.map((item) => (
+              <tr key={item.id}>
+                <td>{item.id}</td>
+                <td>{item.titulo}</td>
+                <td className="admin-nosotros-desc">
+                  {(item.descripcion || "")
+                    .replace(/<[^>]+>/g, "")
+                    .slice(0, 100)}
+                  {item.descripcion && item.descripcion.length > 100 && "..."}
+                </td>
+                <td>
+                  {item.url && (
+                    <img
+                      src={`http://localhost:5000${item.url}`}
+                      alt={item.titulo}
+                      className="admin-nosotros-img"
+                    />
+                  )}
+                </td>
+                <td>
+                  <button onClick={() => handleEdit(item)} className="btn-edit">
+                    Editar
+                  </button>
+                  <button
+                    onClick={() => handleDelete(item.id)}
+                    className="btn-delete"
+                  >
+                    Eliminar
+                  </button>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="5">No hay registros aún.</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
 
-        <input
-          type="file"
-          name="imagen"
-          onChange={handleChange}
-          accept="image/*"
-        />
-
-        {preview && (
-          <div className="preview">
-            <img src={preview} alt="Previsualización" width="120" />
+      {/* 📌 Formulario */}
+      {formVisible && (
+        <form onSubmit={handleSubmit} encType="multipart/form-data">
+          <div>
+            <label>
+              <strong>Título:</strong>
+            </label>
+            <br />
+            <input
+              type="text"
+              value={titulo}
+              onChange={(e) => setTitulo(e.target.value)}
+              style={{ width: "80%", marginBottom: "1rem" }}
+            />
           </div>
-        )}
-
-        <button type="submit">{editId ? "Actualizar" : "Crear"}</button>
-      </form>
-
-      {/* Lista de secciones */}
-      <div className="lista-nosotros">
-        {secciones.map((item) => (
-          <div key={item.id} className="card-nosotros">
-            <h3>{item.titulo}</h3>
-            <p>{item.descripcion}</p>
-            {item.imagen && (
-              <img src={item.imagen} alt={item.titulo} width="120" />
-            )}
-            <div className="acciones">
-              <button onClick={() => handleEdit(item)}>Editar</button>
-              <button onClick={() => handleDelete(item.id)}>Eliminar</button>
+          <div>
+            <label>
+              <strong>Descripción (texto enriquecido):</strong>
+            </label>
+            <div
+              ref={quillRef}
+              style={{
+                height: "250px",
+                marginBottom: "1rem",
+                backgroundColor: "#fff",
+              }}
+            />
+          </div>
+          <div>
+            <label>
+              <strong>Imagen:</strong>
+            </label>
+            <br />
+            <input type="file" accept="image/*" onChange={handleFileChange} />
+          </div>
+          {preview && (
+            <div style={{ marginTop: "1rem" }}>
+              <p>Vista previa:</p>
+              <img
+                src={preview}
+                alt="preview"
+                style={{ width: "150px", border: "1px solid #ccc" }}
+              />
             </div>
-          </div>
-        ))}
-      </div>
+          )}
+          <br />
+          <button type="submit">Guardar Cambios</button>{" "}
+          <button type="button" onClick={handleCancel}>
+            Cancelar
+          </button>
+        </form>
+      )}
+
+      {mensaje && <p>{mensaje}</p>}
     </div>
   );
-}
+};
+
+export default AdminNosotros;

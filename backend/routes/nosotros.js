@@ -1,143 +1,131 @@
 // backend/routes/nosotros.js
 const express = require("express");
+const router = express.Router();
+const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
-const mysql = require("mysql2");
-const multer = require("multer");
+const db = require("../config/db");
 
-const router = express.Router();
+// 📁 Carpeta de subidas para 'nosotros'
+const uploadsDir = path.join(__dirname, "..", "uploads", "nosotros");
+fs.mkdirSync(uploadsDir, { recursive: true });
 
-// Conexión a la base de datos
-const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "", // Cambia si tienes contraseña
-  database: "lagsi_auto",
-});
-
-/* ============================================================
-   CONFIGURACIÓN MULTER SOLO PARA NOSOTROS
-   ============================================================ */
+// 🧰 Multer
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const dir = path.join(__dirname, "../uploads/nosotros");
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-    cb(null, dir);
-  },
+  destination: (req, file, cb) => cb(null, uploadsDir),
   filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + "-" + file.originalname);
+    const unique = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+    cb(null, unique + path.extname(file.originalname));
   },
 });
 const upload = multer({ storage });
 
-/* ============================================================
-   RUTAS
-   ============================================================ */
-
-// 📌 Obtener todas las secciones de Nosotros
+// 🚀 GET: lista completa (para el sitio público)
 router.get("/", (req, res) => {
-  db.query("SELECT * FROM nosotros ORDER BY orden ASC", (err, results) => {
+  const sql =
+    "SELECT id, titulo, descripcion, url, orden FROM nosotros ORDER BY orden ASC, id ASC";
+  db.query(sql, (err, results) => {
     if (err) {
-      return res.status(500).json({ error: "Error al obtener datos" });
+      console.error("❌ Error al obtener nosotros:", err);
+      return res.status(500).json({ error: "Error en el servidor" });
     }
-    const data = results.map((item) => ({
-      ...item,
-      imagen: item.imagen ? `http://localhost:5000${item.imagen}` : null,
-    }));
-    res.json(data);
+    return res.json(results);
   });
 });
 
-// 📌 Crear nueva sección
-router.post("/", upload.single("imagen"), (req, res) => {
-  const { titulo, descripcion } = req.body;
-  if (!titulo || !descripcion) {
-    return res
-      .status(400)
-      .json({ error: "Título y descripción son requeridos" });
-  }
-  const imagenPath = req.file ? `/uploads/nosotros/${req.file.filename}` : null;
-
-  db.query(
-    "INSERT INTO nosotros (titulo, descripcion, imagen) VALUES (?, ?, ?)",
-    [titulo, descripcion, imagenPath],
-    (err, result) => {
-      if (err) {
-        return res
-          .status(500)
-          .json({ error: "Error al guardar en la base de datos" });
-      }
-      res.json({
-        id: result.insertId,
-        titulo,
-        descripcion,
-        imagen: imagenPath ? `http://localhost:5000${imagenPath}` : null,
-        message: "Sección creada correctamente",
-      });
+// 🚀 GET: una sola fila por id (para admin)
+router.get("/:id", (req, res) => {
+  const { id } = req.params;
+  const sql =
+    "SELECT id, titulo, descripcion, url, orden FROM nosotros WHERE id=? LIMIT 1";
+  db.query(sql, [id], (err, results) => {
+    if (err) {
+      console.error("❌ Error al obtener nosotros por id:", err);
+      return res.status(500).json({ error: "Error en el servidor" });
     }
-  );
+    if (results.length === 0) {
+      return res.status(404).json({ error: "No encontrado" });
+    }
+    return res.json(results[0]);
+  });
 });
 
-// 📌 Actualizar sección existente
+// ➕ POST: crear fila (opcional para futuro CRUD)
+router.post("/", upload.single("imagen"), (req, res) => {
+  const { titulo = "", descripcion = "", orden = 0 } = req.body;
+  const url = req.file ? `/uploads/nosotros/${req.file.filename}` : "";
+
+  const sql =
+    "INSERT INTO nosotros (titulo, descripcion, url, orden) VALUES (?, ?, ?, ?)";
+  db.query(sql, [titulo, descripcion, url, orden], (err, result) => {
+    if (err) {
+      console.error("❌ Error al insertar:", err);
+      return res.status(500).json({ error: "Error al guardar en DB" });
+    }
+    return res.json({
+      message: "Sección creada exitosamente",
+      id: result.insertId,
+      url,
+    });
+  });
+});
+
+// ✏️ PUT: actualizar fila por id (admin)
 router.put("/:id", upload.single("imagen"), (req, res) => {
   const { id } = req.params;
-  const { titulo, descripcion } = req.body;
+  const { titulo, descripcion, orden } = req.body;
 
-  db.query("SELECT * FROM nosotros WHERE id = ?", [id], (err, rows) => {
-    if (err || rows.length === 0) {
-      return res.status(404).json({ error: "Registro no encontrado" });
+  const sqlSelect =
+    "SELECT id, titulo, descripcion, url, orden FROM nosotros WHERE id=? LIMIT 1";
+  db.query(sqlSelect, [id], (err, rows) => {
+    if (err) {
+      console.error("❌ Error al verificar nosotros:", err);
+      return res.status(500).json({ error: "Error en el servidor" });
+    }
+    if (rows.length === 0) {
+      return res.status(404).json({ error: "No encontrado" });
     }
 
-    const actual = rows[0];
-    const imagenPath = req.file
+    const current = rows[0];
+    const newUrl = req.file
       ? `/uploads/nosotros/${req.file.filename}`
-      : actual.imagen;
+      : current.url;
 
+    const sqlUpdate =
+      "UPDATE nosotros SET titulo=?, descripcion=?, url=?, orden=? WHERE id=?";
     db.query(
-      "UPDATE nosotros SET titulo = ?, descripcion = ?, imagen = ? WHERE id = ?",
+      sqlUpdate,
       [
-        titulo || actual.titulo,
-        descripcion || actual.descripcion,
-        imagenPath,
+        titulo ?? current.titulo,
+        descripcion ?? current.descripcion,
+        newUrl,
+        typeof orden !== "undefined" ? orden : current.orden,
         id,
       ],
       (err2) => {
         if (err2) {
-          return res
-            .status(500)
-            .json({ error: "Error al actualizar el registro" });
+          console.error("❌ Error al actualizar:", err2);
+          return res.status(500).json({ error: "Error al actualizar DB" });
         }
-        res.json({ message: "Sección actualizada correctamente" });
+        return res.json({
+          message: "Sección actualizada exitosamente",
+          url: newUrl,
+        });
       }
     );
   });
 });
 
-// 📌 Eliminar sección
+// 🗑️ DELETE: eliminar fila por id
 router.delete("/:id", (req, res) => {
   const { id } = req.params;
-
-  db.query("SELECT imagen FROM nosotros WHERE id = ?", [id], (err, rows) => {
-    if (err || rows.length === 0) {
-      return res.status(404).json({ error: "Registro no encontrado" });
+  const sql = "DELETE FROM nosotros WHERE id=?";
+  db.query(sql, [id], (err) => {
+    if (err) {
+      console.error("❌ Error al eliminar:", err);
+      return res.status(500).json({ error: "Error al eliminar en DB" });
     }
-
-    const filePath = rows[0].imagen
-      ? path.join(__dirname, "..", rows[0].imagen)
-      : null;
-    if (filePath && fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
-    }
-
-    db.query("DELETE FROM nosotros WHERE id = ?", [id], (err2) => {
-      if (err2) {
-        return res.status(500).json({ error: "Error al eliminar el registro" });
-      }
-      res.json({ message: "Sección eliminada correctamente" });
-    });
+    return res.json({ message: "Sección eliminada exitosamente" });
   });
 });
 
