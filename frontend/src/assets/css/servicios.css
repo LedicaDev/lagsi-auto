@@ -51,6 +51,7 @@
 .srv-card-body p {
   margin-top: 10px;
   height: 200px;
+  font-size: 0.9rem;
 }
 
 .srv-card-body-title {
@@ -62,6 +63,7 @@
 .srv-links {
   display: flex;
   justify-content: space-around;
+  gap: 17px;
   margin-top: 15px;
 }
 

@@ -1,4 +1,3 @@
-// backend/server.js
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
@@ -13,15 +12,23 @@ const inicioRoutes = require("./routes/inicio");
 const slideshowRoutes = require("./routes/slideshow");
 const testimoniosRoutes = require("./routes/testimonios");
 const nosotrosRoutes = require("./routes/nosotros");
+const equipoRoutes = require("./routes/equipo");
+const serviciosRoutes = require("./routes/servicios");
+// 👈 NEW
 
 const app = express();
 
 // --- Asegurar carpetas necesarias (para subidas de imágenes) ---
 const uploadsRoot = path.join(__dirname, "uploads");
 const uploadsInicio = path.join(uploadsRoot, "inicio");
-const uploadsNosotros = path.join(uploadsRoot, "nosotros"); // 👈 NEW
+const uploadsNosotros = path.join(uploadsRoot, "nosotros");
+const uploadsEquipo = path.join(uploadsRoot, "equipo");
+const uploadsServicios = path.join(uploadsRoot, "servicios"); // 👈 NEW
+
 fs.mkdirSync(uploadsInicio, { recursive: true });
-fs.mkdirSync(uploadsNosotros, { recursive: true }); // 👈 NEW
+fs.mkdirSync(uploadsNosotros, { recursive: true });
+fs.mkdirSync(uploadsEquipo, { recursive: true });
+fs.mkdirSync(uploadsServicios, { recursive: true }); // 👈 NEW
 
 // --- Middlewares globales ---
 app.use(
@@ -44,7 +51,10 @@ app.use("/api", authRoutes);
 app.use("/api/inicio", inicioRoutes);
 app.use("/api/slideshow", slideshowRoutes);
 app.use("/api/testimonios", testimoniosRoutes);
-app.use("/api/nosotros", nosotrosRoutes); // ✅
+app.use("/api/nosotros", nosotrosRoutes);
+app.use("/api/equipo", equipoRoutes);
+app.use("/api/servicios", serviciosRoutes);
+// 👈 NEW
 
 // ✅ Ruta para validar autenticación usando la cookie
 app.get("/api/checkAuth", (req, res) => {

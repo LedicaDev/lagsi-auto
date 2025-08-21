@@ -9,6 +9,7 @@ import "../assets/css/nosotros.css";
 // ✅ Importar componentes
 import Nosotros from "./Nosotros";
 import Testimonios from "./Testimonios";
+import Servicios from "./Servicios";
 
 const Inicio = () => {
   const [description, setDescription] = useState("");
@@ -141,6 +142,7 @@ const Inicio = () => {
 
       {/* ✅ Sección Nosotros */}
       <Nosotros />
+      <Servicios />
     </>
   );
 };

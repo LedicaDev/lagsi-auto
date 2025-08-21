@@ -1,0 +1,71 @@
+.admin-equipo {
+  padding: 20px;
+}
+
+.equipo-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.equipo-form input,
+.equipo-form textarea,
+.equipo-form button {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.preview img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-top: 10px;
+}
+
+.equipo-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.equipo-table th,
+.equipo-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.equipo-table .miniatura {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.acciones {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.btn-edit {
+  background-color: orange;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 6px;
+}
+
+.btn-delete {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}

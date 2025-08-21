@@ -11,8 +11,8 @@ import AdminInicio from "../components/AdminInicio";
 import AdminSlideshow from "../components/AdminSlideshow";
 import AdminTestimonios from "../components/AdminTestimonios";
 import AdminNosotros from "../components/AdminNosotros";
-// import AdminEquipo from "../components/AdminEquipo";
-// import AdminServicios from "../components/AdminServicios";
+import AdminEquipo from "../components/AdminEquipo";
+import AdminServicios from "../components/AdminServicios";
 // import AdminContacto from "../components/AdminContacto";
 // import AdminUsuarios from "../components/AdminUsuarios";
 
@@ -65,10 +65,10 @@ export default function PanelAdmin() {
         return <AdminTestimonios />;
       case "admin-nosotros":
         return <AdminNosotros />;
-      // case "admin-equipo":
-      //   return <AdminEquipo />;
-      // case "admin-servicios":
-      //   return <AdminServicios />;
+      case "admin-equipo":
+        return <AdminEquipo />;
+      case "admin-servicios":
+        return <AdminServicios />;
       // case "admin-contacto":
       //   return <AdminContacto />;
       // case "admin-usuarios":
