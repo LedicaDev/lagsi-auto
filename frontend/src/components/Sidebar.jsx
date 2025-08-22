@@ -2,7 +2,7 @@ import { useState } from "react";
 import "boxicons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faAt,
+  /* faAt, */
   faBars,
   faBriefcase,
   faHome,
@@ -60,10 +60,10 @@ const Sidebar = ({ onLogout, onMenuClick }) => {
             <FontAwesomeIcon icon={faBriefcase} />
             {!collapsed && <span>Admin Servicios</span>}
           </li>
-          <li onClick={() => onMenuClick("admin-contacto")}>
+          {/*  <li onClick={() => onMenuClick("admin-contacto")}>
             <FontAwesomeIcon icon={faAt} />
             {!collapsed && <span>Admin Contacto</span>}
-          </li>
+          </li> */}
           <li onClick={() => onMenuClick("admin-usuarios")}>
             <FontAwesomeIcon icon={faUserPlus} />
             {!collapsed && <span>Admin Usuarios</span>}

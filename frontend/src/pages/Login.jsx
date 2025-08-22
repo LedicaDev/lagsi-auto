@@ -1,7 +1,8 @@
+// frontend/src/pages/Login.jsx
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import "../assets/css/login.css"; // aquí metemos los estilos
+import "../assets/css/login.css";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -18,11 +19,19 @@ export default function Login() {
       const res = await axios.post(
         "http://localhost:5000/api/login",
         { email, password },
-        { withCredentials: true }
+        { withCredentials: true } // ✅ cookie httpOnly se guarda automáticamente
       );
-      console.log("✅ Login:", res.data);
+
+      console.log("✅ Login exitoso:", res.data);
+
+      // Guardamos solo la info del usuario (no el token)
+      if (res.data.usuario) {
+        sessionStorage.setItem("usuario", JSON.stringify(res.data.usuario));
+      }
+
       navigate("/panel");
     } catch (err) {
+      console.error("❌ Error en login:", err.response?.data || err.message);
       setError(err.response?.data?.error || "Error al iniciar sesión");
     }
   };

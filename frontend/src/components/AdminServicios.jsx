@@ -1,5 +1,7 @@
+// frontend/src/components/AdminServicios.jsx
 import { useEffect, useState } from "react";
 import axios from "axios";
+import Swal from "sweetalert2";
 import "../assets/css/adminServicios.css";
 
 const AdminServicios = () => {
@@ -23,7 +25,7 @@ const AdminServicios = () => {
       const res = await axios.get("http://localhost:5000/api/servicios");
       setServicios(res.data);
     } catch (err) {
-      console.error("Error al cargar servicios:", err);
+      Swal.fire("Error", "No se pudieron cargar los servicios.", "error");
     }
   };
 
@@ -49,8 +51,10 @@ const AdminServicios = () => {
 
       if (editing) {
         await axios.put(`http://localhost:5000/api/servicios/${editing}`, data);
+        Swal.fire("Éxito", "Servicio actualizado correctamente.", "success");
       } else {
         await axios.post("http://localhost:5000/api/servicios", data);
+        Swal.fire("Éxito", "Servicio creado correctamente.", "success");
       }
 
       setFormData({
@@ -64,7 +68,7 @@ const AdminServicios = () => {
       setEditing(null);
       fetchServicios();
     } catch (err) {
-      console.error("Error guardando servicio:", err);
+      Swal.fire("Error", "No se pudo guardar el servicio.", "error");
     }
   };
 
@@ -81,12 +85,27 @@ const AdminServicios = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("¿Seguro que deseas eliminar este servicio?")) return;
+    const result = await Swal.fire({
+      title: "¿Eliminar servicio?",
+      text: "Esta acción no se puede deshacer.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+    });
+
+    if (!result.isConfirmed) return;
+
     try {
       await axios.delete(`http://localhost:5000/api/servicios/${id}`);
       setServicios(servicios.filter((s) => s.id !== id));
+      Swal.fire(
+        "Eliminado",
+        "El servicio fue eliminado correctamente.",
+        "success"
+      );
     } catch (err) {
-      console.error("Error eliminando servicio:", err);
+      Swal.fire("Error", "No se pudo eliminar el servicio.", "error");
     }
   };
 

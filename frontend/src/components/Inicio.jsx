@@ -10,6 +10,8 @@ import "../assets/css/nosotros.css";
 import Nosotros from "./Nosotros";
 import Testimonios from "./Testimonios";
 import Servicios from "./Servicios";
+import Footer from "./Footer";
+import Contacto from "./Contacto";
 
 const Inicio = () => {
   const [description, setDescription] = useState("");
@@ -143,6 +145,8 @@ const Inicio = () => {
       {/* ✅ Sección Nosotros */}
       <Nosotros />
       <Servicios />
+      <Contacto />
+      <Footer />
     </>
   );
 };

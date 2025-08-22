@@ -14,6 +14,7 @@ const testimoniosRoutes = require("./routes/testimonios");
 const nosotrosRoutes = require("./routes/nosotros");
 const equipoRoutes = require("./routes/equipo");
 const serviciosRoutes = require("./routes/servicios");
+const usuariosRoutes = require("./routes/usuarios");
 // 👈 NEW
 
 const app = express();
@@ -54,6 +55,7 @@ app.use("/api/testimonios", testimoniosRoutes);
 app.use("/api/nosotros", nosotrosRoutes);
 app.use("/api/equipo", equipoRoutes);
 app.use("/api/servicios", serviciosRoutes);
+app.use("/api/usuarios", usuariosRoutes);
 // 👈 NEW
 
 // ✅ Ruta para validar autenticación usando la cookie

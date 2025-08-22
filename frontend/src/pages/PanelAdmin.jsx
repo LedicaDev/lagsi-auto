@@ -13,8 +13,8 @@ import AdminTestimonios from "../components/AdminTestimonios";
 import AdminNosotros from "../components/AdminNosotros";
 import AdminEquipo from "../components/AdminEquipo";
 import AdminServicios from "../components/AdminServicios";
+import AdminUsuarios from "../components/AdminUsuarios";
 // import AdminContacto from "../components/AdminContacto";
-// import AdminUsuarios from "../components/AdminUsuarios";
 
 export default function PanelAdmin() {
   const navigate = useNavigate();
@@ -71,28 +71,30 @@ export default function PanelAdmin() {
         return <AdminServicios />;
       // case "admin-contacto":
       //   return <AdminContacto />;
-      // case "admin-usuarios":
-      //   return <AdminUsuarios />;
+      case "admin-usuarios":
+        return <AdminUsuarios />;
       default:
         return <AdminInicio />;
     }
   };
 
   return (
-    <DashboardLayout onLogout={onLogout} onMenuClick={onMenuClick}>
-      <div className="content-header">
-        <h2>
-          {active === "admin-inicio" && "Admin Inicio"}
-          {active === "admin-slideshow" && "Admin Slideshow"}
-          {active === "admin-testimonios" && "Admin Testimonios"}
-          {active === "admin-nosotros" && "Admin Nosotros"}
-          {active === "admin-equipo" && "Admin Equipo"}
-          {active === "admin-servicios" && "Admin Servicios"}
-          {active === "admin-contacto" && "Admin Contacto"}
-          {active === "admin-usuarios" && "Admin Usuarios"}
-        </h2>
-      </div>
-      <div className="content-body">{renderContent()}</div>
-    </DashboardLayout>
+    <>
+      <DashboardLayout onLogout={onLogout} onMenuClick={onMenuClick}>
+        <div className="content-header">
+          <h2>
+            {active === "admin-inicio" && "Admin Inicio"}
+            {active === "admin-slideshow" && "Admin Slideshow"}
+            {active === "admin-testimonios" && "Admin Testimonios"}
+            {active === "admin-nosotros" && "Admin Nosotros"}
+            {active === "admin-equipo" && "Admin Equipo"}
+            {active === "admin-servicios" && "Admin Servicios"}
+            {/* {active === "admin-contacto" && "Admin Contacto"} */}
+            {active === "admin-usuarios" && "Admin Usuarios"}
+          </h2>
+        </div>
+        <div className="content-body">{renderContent()}</div>
+      </DashboardLayout>
+    </>
   );
 }

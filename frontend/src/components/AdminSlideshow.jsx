@@ -1,12 +1,12 @@
 // frontend/src/components/AdminSlideshow.jsx
 import { useState, useEffect } from "react";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 const AdminSlideshow = () => {
   const [images, setImages] = useState([]);
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
-  const [mensaje, setMensaje] = useState("");
 
   useEffect(() => {
     fetchImages();
@@ -18,7 +18,7 @@ const AdminSlideshow = () => {
       setImages(res.data);
     } catch (error) {
       console.error("Error al cargar imágenes:", error);
-      setMensaje("No se pudo cargar el slideshow.");
+      Swal.fire("Error", "No se pudo cargar el slideshow.", "error");
     }
   };
 
@@ -33,7 +33,7 @@ const AdminSlideshow = () => {
   const handleUpload = async (e) => {
     e.preventDefault();
     if (!file) {
-      setMensaje("⚠️ Selecciona una imagen primero.");
+      Swal.fire("Atención", "⚠️ Selecciona una imagen primero.", "warning");
       return;
     }
 
@@ -45,26 +45,35 @@ const AdminSlideshow = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      setMensaje("✅ Imagen subida con éxito.");
+      Swal.fire("Éxito", "✅ Imagen subida con éxito.", "success");
       setFile(null);
       setPreview(null);
       fetchImages();
     } catch (error) {
       console.error("Error al subir la imagen:", error);
-      setMensaje("❌ Error al subir la imagen.");
+      Swal.fire("Error", "❌ Error al subir la imagen.", "error");
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("¿Seguro que quieres eliminar esta imagen?")) return;
+    const confirm = await Swal.fire({
+      title: "¿Eliminar imagen?",
+      text: "Esta acción no se puede deshacer.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+    });
+
+    if (!confirm.isConfirmed) return;
 
     try {
       await axios.delete(`http://localhost:5000/api/slideshow/${id}`);
-      setMensaje("🗑️ Imagen eliminada.");
+      Swal.fire("Eliminada", "🗑️ Imagen eliminada correctamente.", "success");
       fetchImages();
     } catch (error) {
       console.error("Error al eliminar imagen:", error);
-      setMensaje("❌ Error al eliminar la imagen.");
+      Swal.fire("Error", "❌ Error al eliminar la imagen.", "error");
     }
   };
 
@@ -95,8 +104,6 @@ const AdminSlideshow = () => {
         <br />
         <button type="submit">Guardar Imagen</button>
       </form>
-
-      {mensaje && <p>{mensaje}</p>}
 
       <hr />
 

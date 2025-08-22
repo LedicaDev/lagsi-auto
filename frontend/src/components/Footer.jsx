@@ -1,5 +1,6 @@
 import "../assets/css/footer.css";
 import CopyRight from "./CopyRight";
+import PoliticasModal from "./PoliticasModal"; // 👈 Reutilizamos el mismo modal
 
 const Footer = () => {
   return (
@@ -51,11 +52,11 @@ const Footer = () => {
           <br />
           <ul>
             <li className="date-politics">
-              <i class="fa-solid fa-flag"></i>&nbsp;
-              <a href="" className="footer-links-item">
-                Política de tratamiento de datos personales Ley 1581 de 2012 y
-                el Decreto 1377 de 2013
-              </a>
+              <i className="fa-solid fa-flag"></i>&nbsp;
+              <PoliticasModal
+                triggerText="Política de tratamiento de datos personales Ley 1581 de 2012 y el Decreto 1377 de 2013"
+                className="footer-links-item"
+              />
             </li>
           </ul>
         </div>
@@ -73,7 +74,7 @@ const Footer = () => {
               </a>
             </li>
             <li>
-              <a className="footer-links-item" href="#aservicios">
+              <a className="footer-links-item" href="#servicios">
                 Ahorro Programado
               </a>
             </li>

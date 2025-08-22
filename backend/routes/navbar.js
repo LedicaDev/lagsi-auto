@@ -20,18 +20,3 @@ router.get("/", (req, res) => {
 });
 
 module.exports = router;
-
-// routes/navbar.js
-/* router.get("/", async (req, res) => {
-  const [row] = await db.query("SELECT * FROM navbar_config WHERE id=1");
-  res.json(row);
-});
-
-router.put("/", async (req, res) => {
-  const { logoUrl, items, bgColor } = req.body;
-  await db.query(
-    "UPDATE navbar_config SET logo_url=?, items=?, bg_color=? WHERE id=1",
-    [logoUrl, JSON.stringify(items), bgColor]
-  );
-  res.sendStatus(204);
-}); */

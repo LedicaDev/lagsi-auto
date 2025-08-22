@@ -1,5 +1,7 @@
+// frontend/src/components/AdminEquipo.jsx
 import { useState, useEffect } from "react";
 import axios from "axios";
+import Swal from "sweetalert2";
 import "../assets/css/adminEquipo.css";
 
 const AdminEquipo = () => {
@@ -25,7 +27,7 @@ const AdminEquipo = () => {
       const res = await axios.get("http://localhost:5000/api/equipo");
       setMiembros(res.data);
     } catch (err) {
-      console.error("Error al cargar equipo:", err);
+      Swal.fire("Error", "No se pudo cargar el equipo.", "error");
     }
   };
 
@@ -58,15 +60,17 @@ const AdminEquipo = () => {
           formData,
           { headers: { "Content-Type": "multipart/form-data" } }
         );
+        Swal.fire("Éxito", "Miembro actualizado correctamente.", "success");
       } else {
         await axios.post("http://localhost:5000/api/equipo", formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
+        Swal.fire("Éxito", "Miembro agregado correctamente.", "success");
       }
       resetForm();
       fetchEquipo();
     } catch (err) {
-      console.error("Error al guardar miembro:", err);
+      Swal.fire("Error", "No se pudo guardar el miembro.", "error");
     }
   };
 
@@ -77,7 +81,7 @@ const AdminEquipo = () => {
       cargo: miembro.cargo,
       descripcion: miembro.descripcion,
       orden: miembro.orden,
-      visible: miembro.visible === 1,
+      visible: miembro.visible === 1 || miembro.visible === true,
     });
     setPreview(`http://localhost:5000${miembro.imagen_url}`);
     setEditingId(miembro.id);
@@ -85,12 +89,27 @@ const AdminEquipo = () => {
 
   // 🔹 Eliminar
   const handleDelete = async (id) => {
-    if (!window.confirm("¿Seguro que deseas eliminar este miembro?")) return;
+    const result = await Swal.fire({
+      title: "¿Eliminar miembro?",
+      text: "Esta acción no se puede deshacer.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+    });
+
+    if (!result.isConfirmed) return;
+
     try {
       await axios.delete(`http://localhost:5000/api/equipo/${id}`);
+      Swal.fire(
+        "Eliminado",
+        "El miembro fue eliminado correctamente.",
+        "success"
+      );
       fetchEquipo();
     } catch (err) {
-      console.error("Error al eliminar miembro:", err);
+      Swal.fire("Error", "No se pudo eliminar el miembro.", "error");
     }
   };
 

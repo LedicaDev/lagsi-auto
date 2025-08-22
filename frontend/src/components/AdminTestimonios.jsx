@@ -1,152 +1,175 @@
 // frontend/src/components/AdminTestimonios.jsx
 import { useEffect, useState } from "react";
 import axios from "axios";
+import Swal from "sweetalert2";
+import "../assets/css/adminTestimonios.css";
+
+const API_URL = "http://localhost:5000/api/testimonios";
 
 const AdminTestimonios = () => {
   const [testimonios, setTestimonios] = useState([]);
-  const [titulo, setTitulo] = useState("");
-  const [url, setUrl] = useState("");
-  const [editId, setEditId] = useState(null);
-  const [mensaje, setMensaje] = useState("");
+  const [formData, setFormData] = useState({ titulo: "", url: "" });
+  const [editing, setEditing] = useState(null);
 
+  // ✅ Cargar testimonios
   useEffect(() => {
     fetchTestimonios();
   }, []);
 
   const fetchTestimonios = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/testimonios");
+      const res = await axios.get(API_URL);
       setTestimonios(res.data);
-    } catch (error) {
-      console.error("Error al cargar testimonios:", error);
-      setMensaje("No se pudieron cargar los testimonios.");
+    } catch (err) {
+      console.error("Error al cargar testimonios:", err);
+      Swal.fire("Error", "No se pudieron cargar los testimonios", "error");
     }
   };
 
+  // ✅ Manejo de inputs
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  // ✅ Crear / Actualizar
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      if (editId) {
-        // Editar testimonio
-        await axios.put(`http://localhost:5000/api/testimonios/${editId}`, {
-          titulo,
-          url,
-        });
-        setMensaje("Testimonio actualizado correctamente.");
+      if (editing) {
+        await axios.put(`${API_URL}/${editing}`, formData);
+        Swal.fire("Actualizado", "El testimonio fue actualizado", "success");
       } else {
-        // Crear testimonio nuevo
-        await axios.post("http://localhost:5000/api/testimonios", {
-          titulo,
-          url,
-        });
-        setMensaje("Testimonio agregado correctamente.");
+        await axios.post(API_URL, formData);
+        Swal.fire("Creado", "Nuevo testimonio agregado", "success");
       }
-
-      setTitulo("");
-      setUrl("");
-      setEditId(null);
       fetchTestimonios();
-    } catch (error) {
-      console.error("Error al guardar testimonio:", error);
-      setMensaje("Error al guardar el testimonio.");
+      resetForm();
+    } catch (err) {
+      console.error("Error al guardar testimonio:", err);
+      Swal.fire("Error", "No se pudo guardar el testimonio", "error");
     }
   };
 
+  // ✅ Editar
   const handleEdit = (testimonio) => {
-    setTitulo(testimonio.titulo);
-    setUrl(testimonio.url);
-    setEditId(testimonio.id);
+    setEditing(testimonio.id);
+    setFormData({ titulo: testimonio.titulo, url: testimonio.url });
   };
 
+  // ✅ Eliminar
   const handleDelete = async (id) => {
-    if (!window.confirm("¿Seguro que deseas eliminar este testimonio?")) return;
+    const result = await Swal.fire({
+      title: "¿Eliminar?",
+      text: "Esta acción no se puede deshacer",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+    });
+
+    if (!result.isConfirmed) return;
 
     try {
-      await axios.delete(`http://localhost:5000/api/testimonios/${id}`);
-      setMensaje("Testimonio eliminado correctamente.");
+      await axios.delete(`${API_URL}/${id}`);
       fetchTestimonios();
-    } catch (error) {
-      console.error("Error al eliminar testimonio:", error);
-      setMensaje("Error al eliminar el testimonio.");
+      Swal.fire("Eliminado", "El testimonio fue eliminado", "success");
+    } catch (err) {
+      console.error("Error al eliminar testimonio:", err);
+      Swal.fire("Error", "No se pudo eliminar", "error");
     }
+  };
+
+  // ✅ Reset formulario
+  const resetForm = () => {
+    setEditing(null);
+    setFormData({ titulo: "", url: "" });
   };
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <h2>Administrar Testimonios</h2>
+    <div className="admin-container">
+      <h3>Administrar Testimonios</h3>
 
-      <form onSubmit={handleSubmit} style={{ marginBottom: "2rem" }}>
-        <div>
-          <label>
-            <strong>Título:</strong>
-          </label>
-          <br />
+      {/* Tabla */}
+      <div className="table-container">
+        <table className="admin-table">
+          <thead>
+            <tr>
+              <th>Título</th>
+              <th>Video</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {testimonios.length > 0 ? (
+              testimonios.map((t) => (
+                <tr key={t.id}>
+                  <td>{t.titulo}</td>
+                  <td>
+                    <iframe
+                      width="200"
+                      height="120"
+                      src={t.url}
+                      title={t.titulo}
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    ></iframe>
+                  </td>
+                  <td className="actions">
+                    <button className="btn-edit" onClick={() => handleEdit(t)}>
+                      Editar
+                    </button>
+                    <button
+                      className="btn-delete"
+                      onClick={() => handleDelete(t.id)}
+                    >
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="3">No hay testimonios registrados</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Formulario */}
+      <div className="form-container">
+        <h4>{editing ? "Editar Testimonio" : "Crear Testimonio"}</h4>
+        <form onSubmit={handleSubmit}>
           <input
             type="text"
-            value={titulo}
-            onChange={(e) => setTitulo(e.target.value)}
-            style={{ width: "60%", marginBottom: "1rem" }}
+            name="titulo"
+            placeholder="Título"
+            value={formData.titulo}
+            onChange={handleChange}
             required
           />
-        </div>
-
-        <div>
-          <label>
-            <strong>URL del video:</strong>
-          </label>
-          <br />
           <input
             type="url"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            style={{ width: "60%", marginBottom: "1rem" }}
+            name="url"
+            placeholder="URL del video"
+            value={formData.url}
+            onChange={handleChange}
             required
           />
-        </div>
 
-        <button type="submit">{editId ? "Actualizar" : "Agregar"}</button>
-      </form>
-
-      {mensaje && <p>{mensaje}</p>}
-
-      <h3>Lista de Testimonios</h3>
-      {testimonios.length === 0 ? (
-        <p>No hay testimonios registrados.</p>
-      ) : (
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "20px" }}>
-          {testimonios.map((testimonio) => (
-            <div
-              key={testimonio.id}
-              style={{
-                border: "1px solid #ccc",
-                padding: "10px",
-                width: "300px",
-                textAlign: "center",
-              }}
-            >
-              <h4>{testimonio.titulo}</h4>
-              <iframe
-                width="100%"
-                height="180"
-                src={testimonio.url}
-                title={testimonio.titulo}
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              ></iframe>
-              <div style={{ marginTop: "10px" }}>
-                <button onClick={() => handleEdit(testimonio)}>Editar</button>
-                <button
-                  onClick={() => handleDelete(testimonio.id)}
-                  style={{ marginLeft: "10px", color: "red" }}
-                >
-                  Eliminar
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+          <div className="form-actions">
+            <button type="submit" className="btn-save">
+              {editing ? "Actualizar" : "Crear"}
+            </button>
+            {editing && (
+              <button type="button" className="btn-cancel" onClick={resetForm}>
+                Cancelar
+              </button>
+            )}
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

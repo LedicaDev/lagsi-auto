@@ -1,138 +1,249 @@
 // frontend/src/components/AdminUsuarios.jsx
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import Swal from "sweetalert2";
+import "../assets/css/adminUsuarios.css";
 
-export default function AdminUsuarios() {
+const API_URL = "http://localhost:5000/api/usuarios";
+
+const AdminUsuarios = () => {
   const [usuarios, setUsuarios] = useState([]);
-  const [form, setForm] = useState({
+  const [editing, setEditing] = useState(null);
+  const [formData, setFormData] = useState({
     nombre: "",
     email: "",
     password: "",
     rol: "editor",
   });
 
-  const token = sessionStorage.getItem("token");
-
-  // 📌 Función para traer usuarios (memorizada para evitar warning de useEffect)
-  const fetchUsuarios = useCallback(async () => {
-    try {
-      const res = await fetch("/api/usuarios", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) throw new Error("Error al obtener usuarios");
-      const data = await res.json();
-      setUsuarios(data);
-    } catch (error) {
-      console.error("Error cargando usuarios:", error);
-    }
-  }, [token]);
-
-  // 📌 Cargar usuarios al iniciar
+  // ✅ Cargar usuarios
   useEffect(() => {
     fetchUsuarios();
-  }, [fetchUsuarios]);
+  }, []);
 
-  // 📌 Manejar cambios en campos
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const fetchUsuarios = async () => {
+    try {
+      const res = await axios.get(API_URL, { withCredentials: true });
+      setUsuarios(res.data);
+    } catch (err) {
+      console.error("Error al cargar usuarios:", err);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: err.response?.data?.error || "Error al cargar usuarios",
+      });
+    }
   };
 
-  // 📌 Registrar usuario
-  const handleSubmit = async (e) => {
+  // ✅ Manejo de inputs
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  // ✅ Crear usuario
+  const handleCreate = async (e) => {
     e.preventDefault();
-    if (!form.nombre || !form.email || !form.password) {
-      alert("Todos los campos son obligatorios");
-      return;
+    try {
+      await axios.post(API_URL, formData, { withCredentials: true });
+      await fetchUsuarios();
+      resetForm();
+      Swal.fire({
+        icon: "success",
+        title: "Éxito",
+        text: "Usuario creado exitosamente",
+        timer: 1800,
+        showConfirmButton: false,
+      });
+    } catch (err) {
+      console.error("Error al crear usuario:", err);
+      Swal.fire({
+        icon: "error",
+        title: "Error al crear",
+        text: err.response?.data?.error || "No se pudo crear el usuario",
+      });
     }
+  };
+
+  // ✅ Editar usuario
+  const handleEdit = (usuario) => {
+    setEditing(usuario.id);
+    setFormData({
+      nombre: usuario.nombre,
+      email: usuario.email,
+      password: "", // no se precarga por seguridad
+      rol: usuario.rol,
+    });
+  };
+
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.put(`${API_URL}/${editing}`, formData, {
+        withCredentials: true,
+      });
+      await fetchUsuarios();
+      resetForm();
+      Swal.fire({
+        icon: "success",
+        title: "Actualizado",
+        text: "Usuario actualizado exitosamente",
+        timer: 1800,
+        showConfirmButton: false,
+      });
+    } catch (err) {
+      console.error("Error al actualizar usuario:", err);
+      Swal.fire({
+        icon: "error",
+        title: "Error al actualizar",
+        text: err.response?.data?.error || "No se pudo actualizar el usuario",
+      });
+    }
+  };
+
+  // ✅ Eliminar usuario (SweetAlert2)
+  const handleDelete = async (id) => {
+    const result = await Swal.fire({
+      title: "Confirmar eliminación",
+      text: "¿Seguro que deseas eliminar este usuario?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+    });
+
+    if (!result.isConfirmed) return;
 
     try {
-      const res = await fetch("/api/register", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(form),
+      await axios.delete(`${API_URL}/${id}`, { withCredentials: true });
+      await fetchUsuarios();
+      Swal.fire({
+        icon: "success",
+        title: "Eliminado",
+        text: "Usuario eliminado exitosamente",
+        timer: 1600,
+        showConfirmButton: false,
       });
-
-      const data = await res.json();
-      if (!res.ok) {
-        alert(data.error || "Error al registrar usuario");
-        return;
-      }
-
-      alert("Usuario registrado exitosamente");
-      setForm({ nombre: "", email: "", password: "", rol: "editor" });
-      fetchUsuarios(); // refrescar lista
-    } catch (error) {
-      console.error("Error registrando usuario:", error);
+    } catch (err) {
+      console.error("Error al eliminar usuario:", err);
+      Swal.fire({
+        icon: "error",
+        title: "Error al eliminar",
+        text: err.response?.data?.error || "No se pudo eliminar el usuario",
+      });
     }
+  };
+
+  // ✅ Resetear formulario
+  const resetForm = () => {
+    setEditing(null);
+    setFormData({
+      nombre: "",
+      email: "",
+      password: "",
+      rol: "editor",
+    });
   };
 
   return (
-    <div className="admin-usuarios">
-      <h2>Administrar Usuarios</h2>
+    <div className="admin-container">
+      <h3>Administrar Usuarios</h3>
 
-      {/* Formulario para crear usuario */}
-      <form onSubmit={handleSubmit} className="form-usuarios">
-        <input
-          type="text"
-          name="nombre"
-          placeholder="Nombre"
-          value={form.nombre}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="email"
-          name="email"
-          placeholder="Correo"
-          value={form.email}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="password"
-          name="password"
-          placeholder="Contraseña"
-          value={form.password}
-          onChange={handleChange}
-          required
-        />
-        <select name="rol" value={form.rol} onChange={handleChange}>
-          <option value="editor">Editor</option>
-          <option value="admin">Administrador</option>
-        </select>
-        <button type="submit">Registrar Usuario</button>
-      </form>
-
-      {/* Lista de usuarios */}
-      <h3>Lista de Usuarios</h3>
-      <table border="1" cellPadding="8">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Email</th>
-            <th>Rol</th>
-          </tr>
-        </thead>
-        <tbody>
-          {usuarios.length > 0 ? (
-            usuarios.map((u) => (
-              <tr key={u.id}>
-                <td>{u.id}</td>
-                <td>{u.nombre}</td>
-                <td>{u.email}</td>
-                <td>{u.rol}</td>
-              </tr>
-            ))
-          ) : (
+      {/* Tabla usuarios */}
+      <div className="table-container">
+        <table className="admin-table">
+          <thead>
             <tr>
-              <td colSpan="4">No hay usuarios registrados</td>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Rol</th>
+              <th>Acciones</th>
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {usuarios.length > 0 ? (
+              usuarios.map((u) => (
+                <tr key={u.id}>
+                  <td>{u.nombre}</td>
+                  <td>{u.email}</td>
+                  <td>{u.rol}</td>
+                  <td className="actions">
+                    <button className="btn-edit" onClick={() => handleEdit(u)}>
+                      Editar
+                    </button>
+                    <button
+                      className="btn-delete"
+                      onClick={() => handleDelete(u.id)}
+                    >
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="4">No hay usuarios registrados</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Formulario */}
+      <div className="form-container">
+        <h4>{editing ? "Editar Usuario" : "Crear Usuario"}</h4>
+        <form onSubmit={editing ? handleUpdate : handleCreate}>
+          <input
+            type="text"
+            name="nombre"
+            placeholder="Nombre"
+            value={formData.nombre}
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="email"
+            name="email"
+            placeholder="Correo electrónico"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder={editing ? "Nueva contraseña (opcional)" : "Contraseña"}
+            value={formData.password}
+            onChange={handleChange}
+          />
+          <select
+            name="rol"
+            value={formData.rol}
+            onChange={handleChange}
+            required
+          >
+            <option value="admin">Admin</option>
+            <option value="editor">Editor</option>
+          </select>
+
+          <div className="form-actions">
+            <button type="submit" className="btn-save">
+              {editing ? "Actualizar" : "Crear"}
+            </button>
+            {editing && (
+              <button type="button" className="btn-cancel" onClick={resetForm}>
+                Cancelar
+              </button>
+            )}
+          </div>
+        </form>
+      </div>
     </div>
   );
-}
+};
+
+export default AdminUsuarios;

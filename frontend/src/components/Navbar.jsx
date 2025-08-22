@@ -118,7 +118,7 @@ export default function Navbar() {
                     href="/login"
                     onClick={(e) => goTo(e, "/login")}
                   >
-                    Login
+                    cPanel
                   </a>
                 )}
 
@@ -179,7 +179,7 @@ export default function Navbar() {
                   href="/login"
                   onClick={(e) => goTo(e, "/login")}
                 >
-                  Login
+                  cPanel
                 </a>
               )}
 
